@@ -1,7 +1,6 @@
 .cache
 .DS_Store
 .idea
-.ssh
 *.log
 *.tgz
 coverage
@@ -10,5 +9,9 @@ lib-cov
 logs
 node_modules
 temp
-env
+cache
+.eslintcache
+.env
+.env.*
 ossx.config.*
+ossx.*
