@@ -36,11 +36,6 @@ export interface ProviderConfigItem {
 
 export interface OssOptions {
   /**
-   * OSS service provider
-   */
-  providers: ProviderConfigItem[]
-
-  /**
    * Local directory path where files will be uploaded
    * Should be a relative path
    * @default 'dist'
@@ -60,7 +55,7 @@ export interface OssOptions {
   /**
    * Ignore files during upload, support glob patterns
    */
-  ignoreFiles?: string[] | ((file: OSSFile) => PromiseLike<boolean | undefined> | boolean | undefined)
+  ignoreFiles?: string[]
 
   /**
    * Remove files from local after successful upload
@@ -103,4 +98,10 @@ export interface OssOptions {
    * Maximum number of log files to keep, not specified means no limit
    */
   maxLogfiles?: number
+
+  /**
+   * Maximum number of worker threads for uploading files concurrently
+   * @default os.cpus().length
+   */
+  maxWorkers?: number
 }

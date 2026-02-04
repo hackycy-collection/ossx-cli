@@ -1,12 +1,20 @@
-import type { OssOptions } from './types'
+import type { OssOptions, Provider, ProviderConfigItem } from './types'
 import path from 'node:path'
 import process from 'node:process'
 import { loadConfig } from 'unconfig'
 
-export interface UserConfig extends OssOptions { }
+export interface UserProviderConfig extends OssOptions {
+  provider: Provider
+}
+
+export interface UserProviderMultiConfig extends OssOptions {
+  providers: ProviderConfigItem[]
+}
+
+export type UserConfig = UserProviderConfig | UserProviderMultiConfig
 
 export interface LoadedConfigResult {
-  config: UserConfig
+  config: UserProviderConfig | UserProviderMultiConfig
   configFile?: string
 }
 
@@ -15,7 +23,6 @@ export function defineConfig(config: UserConfig): UserConfig {
 }
 
 const defaultOssOptions: OssOptions = {
-  providers: [],
   target: 'dist',
   removeWhenUploaded: false,
   abortOnFailure: false,
@@ -24,11 +31,11 @@ const defaultOssOptions: OssOptions = {
   retryTimes: 3,
 }
 
-export async function loadConfigFromFile(configFile?: string): Promise<LoadedConfigResult> {
+export async function loadConfigFromFile(configFile?: string): Promise<UserConfig> {
   const resolvedPath = configFile ? path.resolve(configFile) : undefined
   const extensions = ['ts', 'mts', 'cts', 'js', 'mjs', 'cjs', 'json']
 
-  const { config } = await loadConfig<UserConfig>({
+  const { config } = await loadConfig<Partial<UserConfig>>({
     cwd: process.cwd(),
     sources: resolvedPath
       ? [
@@ -40,8 +47,5 @@ export async function loadConfigFromFile(configFile?: string): Promise<LoadedCon
     defaults: defaultOssOptions,
   })
 
-  return {
-    config,
-    configFile: resolvedPath,
-  }
+  return config as UserConfig
 }
