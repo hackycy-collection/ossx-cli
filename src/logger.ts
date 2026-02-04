@@ -1,4 +1,4 @@
-import type { OssOptions } from './types'
+import type { OssOptions, Provider } from './types'
 import { Buffer } from 'node:buffer'
 import fs from 'node:fs'
 import path from 'node:path'
@@ -12,7 +12,7 @@ export class Logger {
   private logDir: string
   private maxLogfiles?: number
 
-  constructor(logDir: string, cfg: OssOptions) {
+  constructor(logDir: string, cfg: OssOptions & { provider: Provider }) {
     this.startTime = new Date()
     this.logDir = logDir
     this.maxLogfiles = cfg.maxLogfiles
@@ -34,9 +34,6 @@ export class Logger {
     }
     if (cfg.destination) {
       header += `  Destination Directory: ${cfg.destination}\n`
-    }
-    if (cfg.cwd) {
-      header += `  CWD: ${cfg.cwd}\n`
     }
 
     header += `  Provider: ${this.provider.name || 'N/A'}\n`

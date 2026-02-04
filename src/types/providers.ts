@@ -1,5 +1,5 @@
 import type { Buffer } from 'node:buffer'
-import type { OSSUploader } from './config'
+import type { OSSUploader } from './uploader'
 
 export interface TencentCloudCOSProvider {
   name: 'tencent-cloud-cos'

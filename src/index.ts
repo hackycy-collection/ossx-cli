@@ -1,1 +1,2 @@
-export const a = 1
+export { defineConfig } from './config'
+export type { UserConfig } from './config'

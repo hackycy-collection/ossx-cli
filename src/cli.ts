@@ -12,8 +12,9 @@ interface GlobalCLIOptions {
 cli
   .command('', 'run')
   .option('-c, --config <file>', `[string] use specified config file`)
-  .action(async (_options: GlobalCLIOptions) => {
-    // TODO
+  .action(async (options: GlobalCLIOptions) => {
+    const { bootstrap } = await import('./node')
+    await bootstrap(options.config)
   })
 
 cli.help()

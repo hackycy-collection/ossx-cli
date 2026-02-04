@@ -29,11 +29,16 @@ export interface OSSUploader {
   onDestroy?: () => PromiseLike<void> | void
 }
 
+export interface ProviderConfigItem {
+  provider: Provider
+  tag: string
+}
+
 export interface OssOptions {
   /**
    * OSS service provider
    */
-  provider: Provider
+  providers: ProviderConfigItem[]
 
   /**
    * Local directory path where files will be uploaded
@@ -46,13 +51,6 @@ export interface OssOptions {
    * Remote directory path where files will be uploaded from
    */
   destination?: string
-
-  /**
-   * Current working directory for resolving relative paths
-   * Defaults to process.cwd() if not specified
-   * @default process.cwd()
-   */
-  cwd?: string
 
   /**
    * Include files during upload, support glob patterns
@@ -82,6 +80,12 @@ export interface OssOptions {
    * @default 3
    */
   retryTimes?: number
+
+  /**
+   * Request timeout in milliseconds
+   * @default 60000
+   */
+  requestTimeout?: number
 
   /**
    * Enable or disable logging
