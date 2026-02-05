@@ -1,4 +1,4 @@
-import type { OssOptions, Provider } from './types'
+import type { UploadOptions } from './types'
 import { Buffer } from 'node:buffer'
 import fs from 'node:fs'
 import path from 'node:path'
@@ -12,7 +12,7 @@ export class Logger {
   private logDir: string
   private maxLogfiles?: number
 
-  constructor(logDir: string, cfg: OssOptions & { provider: Provider }) {
+  constructor(logDir: string, cfg: UploadOptions) {
     this.startTime = new Date()
     this.logDir = logDir
     this.maxLogfiles = cfg.maxLogfiles
@@ -54,14 +54,17 @@ export class Logger {
     }
   }
 
-  logError(file: string, error: unknown): void {
+  logError(cause: string, error: unknown): void {
     const timestamp = this.getLocalTimestamp()
     const errorMessage = error instanceof Error ? error.message : String(error)
     const stackTrace = error instanceof Error ? error.stack : ''
 
-    let logEntry = `[${timestamp}] ERROR: Failed to upload ${file}\n`
+    let logEntry = `[${timestamp}] ERROR: Failed to upload ${cause}\n`
       + `Message: ${errorMessage}\n`
-      + `Stack: ${stackTrace}\n`
+
+    if (stackTrace) {
+      logEntry += `Stack : ${stackTrace}\n`
+    }
 
     if (isAxiosError(error)) {
       // HTTP request/response format logging

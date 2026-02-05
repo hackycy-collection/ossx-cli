@@ -1,7 +1,7 @@
 {
   "name": "ossx-cli",
   "type": "module",
-  "version": "0.0.3",
+  "version": "0.2.6",
   "packageManager": "pnpm@10.28.1",
   "author": "hackycy <hackycy@outlook.com>",
   "license": "MIT",
@@ -16,6 +16,7 @@
   "exports": {
     ".": "./dist/index.mjs",
     "./cli": "./dist/cli.mjs",
+    "./upload.worker": "./dist/upload.worker.mjs",
     "./package.json": "./package.json"
   },
   "main": "./dist/index.mjs",
@@ -34,15 +35,15 @@
     "lint": "eslint",
     "prepublishOnly": "nr build",
     "release": "bumpp",
-    "test": "tsx src/cli.ts",
+    "test": "node ./dist/cli.mjs",
     "typecheck": "tsc",
     "prepare": "simple-git-hooks"
   },
   "dependencies": {
     "@clack/prompts": "catalog:cli",
+    "ansis": "^4.2.0",
     "axios": "catalog:cli",
     "cac": "catalog:cli",
-    "cli-progress": "^3.12.0",
     "mime-types": "catalog:cli",
     "node-ssh": "catalog:cli",
     "tinyglobby": "catalog:cli",
@@ -52,10 +53,10 @@
     "@antfu/eslint-config": "catalog:cli",
     "@antfu/ni": "catalog:cli",
     "@antfu/utils": "catalog:inlined",
-    "@types/cli-progress": "^3.11.6",
     "@types/mime-types": "^3.0.1",
     "@types/node": "catalog:types",
     "bumpp": "catalog:cli",
+    "cross-env": "^10.1.0",
     "eslint": "catalog:cli",
     "lint-staged": "catalog:cli",
     "simple-git-hooks": "catalog:cli",

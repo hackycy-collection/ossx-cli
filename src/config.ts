@@ -45,6 +45,7 @@ export async function loadConfigFromFile(configFile?: string): Promise<UserConfi
           { files: 'ossx.config', extensions },
         ],
     defaults: defaultOssOptions,
+    merge: true,
   })
 
   return config as UserConfig

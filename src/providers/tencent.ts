@@ -9,7 +9,9 @@ interface ISignature {
 }
 
 export class TencentCOSUploader implements OSSUploader {
-  private request = axios.create()
+  private request = axios.create({
+    timeout: 1000 * 60,
+  })
 
   constructor(private readonly provider: TencentCloudCOSProvider) { }
 

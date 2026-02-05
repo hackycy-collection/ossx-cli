@@ -28,8 +28,8 @@ cli
   .command('', 'run')
   .option('-c, --config <file>', `[string] use specified config file`)
   .action(async (options: GlobalCLIOptions) => {
-    const { bootstrap } = await import('./node')
-    await bootstrap(options.config)
+    const { upload } = await import('./upload')
+    await upload(options.config)
   })
 
 cli.help()
