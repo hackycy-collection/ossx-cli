@@ -6,7 +6,7 @@ import os from 'node:os'
 import path from 'node:path'
 import process from 'node:process'
 import { Worker } from 'node:worker_threads'
-import { cancel, isCancel, log, progress, select } from '@clack/prompts'
+import { cancel, confirm, isCancel, log, progress, select } from '@clack/prompts'
 import ansis from 'ansis'
 import mime from 'mime-types'
 import { glob } from 'tinyglobby'
@@ -40,7 +40,7 @@ export async function upload(configFile?: string): Promise<void> {
     else if (providers.length > 1) {
       // prompt select provider
       const selected = await select({
-        message: 'Multiple providers configured, please select one to use:',
+        message: 'Multiple providers configured, please select one to use',
         options: providers.map(item => ({
           value: item.tag,
           label: item.tag,
@@ -49,6 +49,16 @@ export async function upload(configFile?: string): Promise<void> {
       })
 
       if (isCancel(selected)) {
+        cancel('Operation cancelled.')
+        return
+      }
+
+      // 多选时需要二次确认，确保操作
+      const shouldContinue = await confirm({
+        message: `You have selected the provider ${ansis.cyan.bold(selected)}, confirm to continue`,
+      })
+
+      if (isCancel(shouldContinue) || !shouldContinue) {
         cancel('Operation cancelled.')
         return
       }
