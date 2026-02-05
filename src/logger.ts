@@ -59,7 +59,7 @@ export class Logger {
     const errorMessage = error instanceof Error ? error.message : String(error)
     const stackTrace = error instanceof Error ? error.stack : ''
 
-    let logEntry = `[${timestamp}] ERROR: Failed to upload ${cause}\n`
+    let logEntry = `[${timestamp}] ERROR: ${cause}\n`
       + `Message: ${errorMessage}\n`
 
     if (stackTrace) {

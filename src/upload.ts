@@ -6,7 +6,7 @@ import os from 'node:os'
 import path from 'node:path'
 import process from 'node:process'
 import { Worker } from 'node:worker_threads'
-import { cancel, isCancel, log, note, progress, select } from '@clack/prompts'
+import { cancel, isCancel, log, progress, select } from '@clack/prompts'
 import ansis from 'ansis'
 import mime from 'mime-types'
 import { glob } from 'tinyglobby'
@@ -228,8 +228,6 @@ class UploadMaster {
     const allDead = Array.from(this.workerDeadlineMap.values()).every(isDead => isDead)
 
     if (allDead) {
-      this.progressController.stop('All workers have completed.')
-
       // statistics upload result
       const totalFiles = this.files.length
       let successCount = 0
@@ -244,16 +242,13 @@ class UploadMaster {
       // 记录日志
       this.logger?.logTaskCompletion(totalFiles, successCount, failCount)
 
-      const logs: string[] = [
-        `Total files: ${ansis.bold.cyan(totalFiles)}`,
-        `Successfully uploaded: ${ansis.bold.green(successCount)}`,
-      ]
-
-      if (failCount > 0) {
-        logs.push(`Failed uploads: ${ansis.bold.red(failCount)}`)
+      if (failCount <= 0) {
+        this.progressController.stop('All files uploaded successfully')
       }
-
-      note(logs.join('\n'))
+      else {
+        this.progressController.stop(`Uploaded ${ansis.bold.green(successCount)} files successfully`)
+        log.warning(`Failed to upload ${ansis.bold.red(failCount)} files`)
+      }
 
       if (this.options.logger) {
         log.warning(`Log output: ${ansis.underline.blue(this.logger?.getLogPath())}`)

@@ -72,6 +72,7 @@ class UploadWorker {
       this.sendMessage({
         type: uploadError ? 'ERROR' : 'PROGRESS',
         workerId: this.workerId,
+        error: uploadError || undefined,
         progress: {
           currentFile: file,
           current: i + 1,
