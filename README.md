@@ -37,9 +37,44 @@ export default defineConfig({
 })
 ```
 
+支持多provider
+
+``` ts
+import { defineConfig } from 'ossx-cli'
+
+export default defineConfig({
+  providers: [
+    {
+      tag: 'config1',
+      provider: {
+        name: 'aliyun-oss',
+        endpoint: 'oss-cn-shenzhen.aliyuncs.com',
+        accessKeyId: 'xxxxxxx',
+        accessKeySecret: 'xxxxxxx',
+        bucket: 'bucket-xxx',
+      }
+    },
+    {
+      tag: 'config2',
+      provider: {
+        name: 'aliyun-oss',
+        endpoint: 'oss-cn-shenzhen.aliyuncs.com',
+        accessKeyId: 'xxxxxxx',
+        accessKeySecret: 'xxxxxxx',
+        bucket: 'bucket-xxx',
+      }
+    }
+  ],
+  target: 'dist',
+  ignoreFiles: ['*.zip', 'index.html'],
+  destination: 'remote-path',
+  maxLogfiles: 1,
+})
+```
+
 ## 使用
 
-生成环境变量文件：
+运行命令
 
 ```bash
 npx ossx

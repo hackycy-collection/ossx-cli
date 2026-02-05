@@ -41,7 +41,7 @@
   },
   "dependencies": {
     "@clack/prompts": "catalog:cli",
-    "ansis": "^4.2.0",
+    "ansis": "catalog:cli",
     "axios": "catalog:cli",
     "cac": "catalog:cli",
     "mime-types": "catalog:cli",
@@ -53,7 +53,7 @@
     "@antfu/eslint-config": "catalog:cli",
     "@antfu/ni": "catalog:cli",
     "@antfu/utils": "catalog:inlined",
-    "@types/mime-types": "^3.0.1",
+    "@types/mime-types": "catalog:types",
     "@types/node": "catalog:types",
     "bumpp": "catalog:cli",
     "cross-env": "^10.1.0",
