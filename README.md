@@ -5,6 +5,9 @@
 [![bundle][bundle-src]][bundle-href]
 [![License][license-src]][license-href]
 
+![Feb-05-2026 16-14-51](https://github.com/user-attachments/assets/855f6700-bc4f-454a-80be-8b1568487df1)
+
+
 将本地构建产物一键上传到对象存储或服务器目录，用于前端/静态站点/资源文件自动化部署流程。
 
 ## 安装
