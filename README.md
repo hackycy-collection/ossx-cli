@@ -22,7 +22,19 @@ pnpm add -D ossx-cli
 ```ts
 import { defineConfig } from 'ossx-cli'
 
-export default defineConfig({})
+export default defineConfig({
+  provider: {
+    name: 'aliyun-oss',
+    endpoint: 'oss-cn-shenzhen.aliyuncs.com',
+    accessKeyId: 'xxxxxxx',
+    accessKeySecret: 'xxxxxxx',
+    bucket: 'bucket-xxx',
+  },
+  target: 'dist',
+  ignoreFiles: ['*.zip', 'index.html'],
+  destination: 'remote-path',
+  maxLogfiles: 1,
+})
 ```
 
 ## 使用
