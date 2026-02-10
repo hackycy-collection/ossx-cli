@@ -82,6 +82,8 @@ export default defineConfig({
 })
 ```
 
+> CI环境下可配置`OSSX_CI_PROVIDER_TAG`环境变量用于设置默认provider
+
 ## 使用
 
 运行命令

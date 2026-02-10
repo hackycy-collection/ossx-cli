@@ -38,32 +38,46 @@ export async function upload(configFile?: string): Promise<void> {
       provider = providers[0].provider
     }
     else if (providers.length > 1) {
-      // prompt select provider
-      const selected = await select({
-        message: 'Multiple providers configured, please select one to use',
-        options: providers.map(item => ({
-          value: item.tag,
-          label: item.tag,
-          hint: item.provider.name,
-        })),
-      })
-
-      if (isCancel(selected)) {
-        cancel('Operation cancelled.')
-        return
+      // for ci
+      if (process.env.OSSX_CI_PROVIDER_TAG) {
+        const matched = providers.find(item => item.tag === process.env.OSSX_CI_PROVIDER_TAG)
+        if (matched) {
+          provider = matched.provider
+          log.step(`Using provider ${ansis.cyan.bold(matched.tag)} from environment variable ${ansis.gray('OSSX_CI_PROVIDER_TAG')}`)
+        }
+        else {
+          cancel(`No provider matched for tag ${ansis.yellowBright.bold(process.env.OSSX_CI_PROVIDER_TAG)}. Check your config file and try again.`)
+          return
+        }
       }
+      else {
+        // prompt select provider
+        const selected = await select({
+          message: 'Multiple providers configured, please select one to use',
+          options: providers.map(item => ({
+            value: item.tag,
+            label: item.tag,
+            hint: item.provider.name,
+          })),
+        })
 
-      // 多选时需要二次确认，确保操作
-      const shouldContinue = await confirm({
-        message: `You have selected the provider ${ansis.cyan.bold(selected)}, confirm to continue`,
-      })
+        if (isCancel(selected)) {
+          cancel('Operation cancelled.')
+          return
+        }
 
-      if (isCancel(shouldContinue) || !shouldContinue) {
-        cancel('Operation cancelled.')
-        return
+        // 多选时需要二次确认，确保操作
+        const shouldContinue = await confirm({
+          message: `You have selected the provider ${ansis.cyan.bold(selected)}, confirm to continue`,
+        })
+
+        if (isCancel(shouldContinue) || !shouldContinue) {
+          cancel('Operation cancelled.')
+          return
+        }
+
+        provider = providers.find(item => item.tag === selected)?.provider
       }
-
-      provider = providers.find(item => item.tag === selected)?.provider
     }
   }
 
