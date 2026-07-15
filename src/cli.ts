@@ -8,6 +8,7 @@ const cli = cac('ossx')
 interface GlobalCLIOptions {
   '--'?: string[]
   'config'?: string
+  'tag'?: string
 }
 
 function errorHandler(error: Error): void {
@@ -27,9 +28,10 @@ process.on('unhandledRejection', errorHandler)
 cli
   .command('', 'run')
   .option('-c, --config <file>', `[string] use specified config file`)
+  .option('-t, --tag <tag>', `[string] select provider by tag`)
   .action(async (options: GlobalCLIOptions) => {
     const { upload } = await import('./upload')
-    const result = await upload(options.config)
+    const result = await upload(options.config, options.tag)
     if (result && !result.succeeded) {
       process.exitCode = 1
     }

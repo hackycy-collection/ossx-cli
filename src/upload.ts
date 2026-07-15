@@ -38,13 +38,13 @@ interface PreparedUploadTask extends ResolvedUploadTask {
  * Load the user configuration and execute either one selected provider or an
  * explicitly configured provider pipeline.
  */
-export async function upload(configFile?: string): Promise<PipelineResult | undefined> {
+export async function upload(configFile?: string, providerTag?: string): Promise<PipelineResult | undefined> {
   clearScreen()
   console.log(ansis.bold.cyanBright('OSSX CLI'))
   console.log()
 
   const config = await loadConfigFromFile(configFile)
-  const tasks = await resolveUploadTasks(config)
+  const tasks = await resolveUploadTasks(config, providerTag)
   if (!tasks) {
     return undefined
   }
@@ -55,7 +55,7 @@ export async function upload(configFile?: string): Promise<PipelineResult | unde
   return runPipeline(preparedTasks)
 }
 
-export async function resolveUploadTasks(config: UserConfig): Promise<ResolvedUploadTask[] | undefined> {
+export async function resolveUploadTasks(config: UserConfig, providerTag?: string): Promise<ResolvedUploadTask[] | undefined> {
   if ('provider' in config) {
     const { provider, ...options } = config
     return [{ tag: provider.name, options: { ...options, provider } }]
@@ -84,7 +84,7 @@ export async function resolveUploadTasks(config: UserConfig): Promise<ResolvedUp
     })
   }
 
-  const profile = await selectProvider(providers)
+  const profile = await selectProvider(providers, providerTag)
   return profile ? [resolveProfile(profile, rootOptions)] : undefined
 }
 
@@ -111,9 +111,18 @@ function validateProviders(providers: ProviderConfigItem[]): void {
   }
 }
 
-async function selectProvider(providers: ProviderConfigItem[]): Promise<ProviderConfigItem | undefined> {
+async function selectProvider(providers: ProviderConfigItem[], providerTag?: string): Promise<ProviderConfigItem | undefined> {
   if (providers.length === 1) {
     return providers[0]
+  }
+
+  if (providerTag) {
+    const matched = providers.find(item => item.tag === providerTag)
+    if (!matched) {
+      throw new Error(`No provider matched --tag=${providerTag}`)
+    }
+    log.step(`Using provider ${ansis.cyan.bold(matched.tag)} from command-line option --tag`)
+    return matched
   }
 
   if (process.env.OSSX_CI_PROVIDER_TAG) {

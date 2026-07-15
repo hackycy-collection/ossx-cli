@@ -104,7 +104,7 @@ export default defineConfig({
 })
 ```
 
-CI 环境下可配置 `OSSX_CI_PROVIDER_TAG` 环境变量选择默认 provider。
+可通过 `-t, --tag <tag>` 直接选择 provider，例如 `npx ossx --tag config1`。CI 环境下也可配置 `OSSX_CI_PROVIDER_TAG` 环境变量选择默认 provider；两者同时存在时，命令行参数优先。
 
 ### 流水线
 
@@ -154,7 +154,7 @@ export default defineConfig({
 - `abortOnFailure: false` 会先完成当前步骤的剩余文件；设为 `true` 时会终止当前步骤的其他 worker。
 - `removeWhenUploaded` 会延迟到整条流水线成功后执行，避免前序步骤删除后续步骤需要的源文件。
 - 本地文件删除失败不会改变已经完成的上传结果，CLI 会输出未删除文件警告并记录到流水线汇总。
-- 流水线模式不会显示 provider 选择提示，`OSSX_CI_PROVIDER_TAG` 只用于非流水线的选择模式。
+- 流水线模式不会显示 provider 选择提示，`--tag` 和 `OSSX_CI_PROVIDER_TAG` 都只用于非流水线的选择模式。
 
 `pipeline` 中的 tag 必须存在且 provider tag 不能重复。需要使用同一账户上传到不同目录时，可以定义两个不同 tag。
 
@@ -170,6 +170,12 @@ npx ossx
 
 ```bash
 npx ossx -c ./ossx.config.ts
+```
+
+指定多 provider 配置中的 tag：
+
+```bash
+npx ossx -t config1
 ```
 
 ## 测试

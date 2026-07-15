@@ -24,7 +24,7 @@ async function runFixture(configSource, options = {}) {
   }
   await writeFile(configFile, configSource({ targetDir, traceFile }))
 
-  const result = await x('node', [cliPath, '--config', configFile], {
+  const result = await x('node', [cliPath, '--config', configFile, ...(options.args || [])], {
     nodeOptions: {
       cwd: projectRoot,
       env: { ...process.env, ...options.env },
@@ -184,6 +184,83 @@ test('OSSX_CI_PROVIDER_TAG still selects one provider when pipeline is omitted',
 
   assert.equal(result.exitCode, 0, result.stderr || result.stdout)
   assert.equal(trace, 'second\n')
+})
+
+test('--tag selects a provider and overrides OSSX_CI_PROVIDER_TAG', async (t) => {
+  const { fixtureDir, trace, result } = await runFixture(({ targetDir, traceFile }) => `
+    import { appendFile } from 'node:fs/promises'
+    export default {
+      target: ${JSON.stringify(targetDir)},
+      logger: false,
+      providers: [
+        {
+          tag: 'first',
+          provider: { name: 'custom', upload: async () => appendFile(${JSON.stringify(traceFile)}, 'first\\n') },
+        },
+        {
+          tag: 'second',
+          provider: { name: 'custom', upload: async () => appendFile(${JSON.stringify(traceFile)}, 'second\\n') },
+        },
+      ],
+    }
+  `, {
+    args: ['--tag', 'first'],
+    env: { OSSX_CI_PROVIDER_TAG: 'second' },
+  })
+  t.after(() => rm(fixtureDir, { recursive: true, force: true }))
+
+  assert.equal(result.exitCode, 0, result.stderr || result.stdout)
+  assert.equal(trace, 'first\n')
+})
+
+test('--tag reports an unknown provider tag', async (t) => {
+  const { fixtureDir, trace, result } = await runFixture(({ targetDir, traceFile }) => `
+    import { appendFile } from 'node:fs/promises'
+    export default {
+      target: ${JSON.stringify(targetDir)},
+      logger: false,
+      providers: [
+        {
+          tag: 'known',
+          provider: { name: 'custom', upload: async () => appendFile(${JSON.stringify(traceFile)}, 'known\\n') },
+        },
+        {
+          tag: 'other',
+          provider: { name: 'custom', upload: async () => appendFile(${JSON.stringify(traceFile)}, 'other\\n') },
+        },
+      ],
+    }
+  `, { args: ['-t', 'missing'] })
+  t.after(() => rm(fixtureDir, { recursive: true, force: true }))
+
+  assert.equal(result.exitCode, 1)
+  assert.match(result.stderr, /no provider matched --tag=missing/i)
+  assert.equal(trace, '')
+})
+
+test('--tag does not override an explicit pipeline', async (t) => {
+  const { fixtureDir, trace, result } = await runFixture(({ targetDir, traceFile }) => `
+    import { appendFile } from 'node:fs/promises'
+    export default {
+      target: ${JSON.stringify(targetDir)},
+      logger: false,
+      providers: [
+        {
+          tag: 'first',
+          provider: { name: 'custom', upload: async () => appendFile(${JSON.stringify(traceFile)}, 'first\\n') },
+        },
+        {
+          tag: 'second',
+          provider: { name: 'custom', upload: async () => appendFile(${JSON.stringify(traceFile)}, 'second\\n') },
+        },
+      ],
+      pipeline: ['first', 'second'],
+    }
+  `, { args: ['--tag', 'second'] })
+  t.after(() => rm(fixtureDir, { recursive: true, force: true }))
+
+  assert.equal(result.exitCode, 0, result.stderr || result.stdout)
+  assert.equal(trace, 'first\nsecond\n')
 })
 
 test('abortOnFailure stops the remaining files in the current custom task', async (t) => {
